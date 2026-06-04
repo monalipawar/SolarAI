@@ -11,6 +11,40 @@ st.set_page_config(
     layout="centered"
 )
 
+# ── Unit System ────────────────────────────────────────────
+if "unit_system" not in st.session_state:
+    st.session_state.unit_system = "Imperial"
+
+with st.sidebar:
+    st.markdown("### ⚙️ Units")
+    st.session_state.unit_system = st.radio(
+        "Unit System",
+        ["Imperial", "Metric"],
+        index=0
+    )
+
+IS_IMPERIAL = st.session_state.unit_system == "Imperial"
+
+def km_to_miles(km): return km * 0.621371
+def c_to_f(c): return (c * 9/5) + 32
+def kg_to_lb(kg): return kg * 2.20462
+def m_to_ft(m): return m * 3.28084
+
+def format_distance(km):
+    return f"{km * 0.621371:,.0f} mi" if IS_IMPERIAL else f"{km:,.0f} km"
+
+def format_temperature(c):
+    return f"{(c * 9/5) + 32:.0f}°F" if IS_IMPERIAL else f"{c:.0f}°C"
+
+def format_speed(kmh):
+    return f"{kmh * 0.621371:,.0f} mph" if IS_IMPERIAL else f"{kmh:,.0f} km/h"
+
+def format_weight(kg):
+    return f"{kg * 2.20462:,.1f} lb" if IS_IMPERIAL else f"{kg:,.1f} kg"
+
+def format_altitude_km(km):
+    return f"{km * 3280.84:,.0f} ft" if IS_IMPERIAL else f"{km:,.0f} km"
+
 # ── Global CSS ─────────────────────────────────────────────────────────────────
 st.markdown("""
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet">
@@ -488,7 +522,7 @@ elif selected_tab == "🪐 Planets":
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-top:16px;">
         <div style="background:rgba(255,255,255,0.06);border-radius:12px;padding:12px;text-align:center;">
           <div style="font-size:10px;color:rgba(255,255,255,0.5);">DIAMETER</div>
-          <div style="font-size:16px;font-weight:700;color:white;">{p['diameter_km']:,} km</div>
+          <div style="font-size:16px;font-weight:700;color:white;">{format_distance(p['diameter_km'])}</div>
         </div>
         <div style="background:rgba(255,255,255,0.06);border-radius:12px;padding:12px;text-align:center;">
           <div style="font-size:10px;color:rgba(255,255,255,0.5);">MOONS</div>
@@ -504,7 +538,7 @@ elif selected_tab == "🪐 Planets":
         </div>
         <div style="background:rgba(255,255,255,0.06);border-radius:12px;padding:12px;text-align:center;">
           <div style="font-size:10px;color:rgba(255,255,255,0.5);">AVG TEMP</div>
-          <div style="font-size:16px;font-weight:700;color:{'#f87171' if p['temp_c']>0 else '#60a5fa'};">{p['temp_c']}°C</div>
+          <div style="font-size:16px;font-weight:700;color:{'#f87171' if p['temp_c']>0 else '#60a5fa'};">{format_temperature(p['temp_c'])}</div>
         </div>
       </div>
       <div style="margin-top:14px;padding:12px 16px;background:rgba(255,255,255,0.05);border-radius:12px;border-left:3px solid {p['color']};">
@@ -658,7 +692,7 @@ elif selected_tab == "☄️ Asteroids":
                 </div>
                 <div style="text-align:right;">
                   <div style="font-size:11px;color:rgba(255,255,255,0.5);">Miss Distance</div>
-                  <div style="font-size:16px;font-weight:700;color:white;">{neo['miss_km']:,} km</div>
+                  <div style="font-size:16px;font-weight:700;color:white;">{format_distance(neo['miss_km'])}</div>
                   <div style="font-size:10px;color:rgba(255,255,255,0.4);">{miss_m:.1f}× moon distance</div>
                 </div>
               </div>
